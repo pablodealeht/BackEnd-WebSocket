@@ -65,24 +65,24 @@ static async Task Echo(WebSocket webSocket)
                             }
                         }
                     }
-                    else if (tipo == "mover" && mensaje.ContainsKey("title") && mensaje.ContainsKey("x") && mensaje.ContainsKey("y"))
+                    else if (tipo == "mover" && mensaje.ContainsKey("handle") && mensaje.ContainsKey("x") && mensaje.ContainsKey("y"))
                     {
-                        var title = mensaje["title"].GetString();
-                        if (!string.IsNullOrWhiteSpace(title))
+                        if (mensaje["handle"].TryGetInt64(out long hWndValue))
                         {
                             var x = mensaje["x"].GetInt32();
                             var y = mensaje["y"].GetInt32();
 
-                            var ventanas = WindowHelper.GetOpenWindows();
-                            var ventana = ventanas.FirstOrDefault(w => w.Title != null &&
-                                w.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
-                            if (ventana != null)
-                            {
-                                WindowHelper.MoverVentana(ventana.Handle, x, y);
-                                Console.WriteLine($"Ventana movida: {ventana.Title} → ({x}, {y})");
-                            }
+                            IntPtr hWnd = new IntPtr(hWndValue);
+                            WindowHelper.MoverVentana(hWnd, x, y);
+                            Console.WriteLine($"✅ Ventana movida por handle: {hWnd} → ({x}, {y})");
+                        }
+                        else
+                        {
+                            Console.WriteLine("❌ No se pudo parsear el handle.");
                         }
                     }
+
+
                 }
             }
             catch (Exception ex)
@@ -120,6 +120,7 @@ static async Task Echo(WebSocket webSocket)
                             v.Title.Contains("Bloc de notas", StringComparison.OrdinalIgnoreCase)))
                   .Select(v => new
                   {
+                      Handle = v.Handle.ToInt64(), // 👈 lo convertimos a long para pasarlo como JSON
                       v.Title,
                       v.X,
                       v.Y,

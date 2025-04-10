@@ -87,17 +87,37 @@ static async Task Echo(WebSocket webSocket)
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error procesando mensaje JSON: {ex.Message}");
+                Console.WriteLine($"Error procesando mensaje JSON: {ex.Message}");
             }
-
-
 
             Console.WriteLine($"Mensaje recibido: {receivedMessage}");
 
+            if (receivedMessage == "iniciar")
+            {
+                ProcessLauncher.AbrirNotepads(2);
+                Console.WriteLine("Se iniciaron 2 instancias de Notepad.");
+            }
+
+
             if (receivedMessage == "obtener-ventanas")
             {
+                //var ventanas = WindowHelper.GetOpenWindows()
+                //  .Where(v => v.Title.Contains("Notepad"))
+                //  .Select(v => new
+                //  {
+                //      v.Title,
+                //      v.X,
+                //      v.Y,
+                //      v.Width,
+                //      v.Height
+                //  })
+                //  .ToList();
+
                 var ventanas = WindowHelper.GetOpenWindows()
-                  .Where(v => v.Title.Contains("Notepad"))
+                  .Where(v => v.Title != null && (
+                            v.Title.Contains("Notepad", StringComparison.OrdinalIgnoreCase) ||
+                            v.Title.Contains("Notas de texto", StringComparison.OrdinalIgnoreCase) ||
+                            v.Title.Contains("Bloc de notas", StringComparison.OrdinalIgnoreCase)))
                   .Select(v => new
                   {
                       v.Title,
@@ -107,6 +127,7 @@ static async Task Echo(WebSocket webSocket)
                       v.Height
                   })
                   .ToList();
+
 
                 var resolucion = ScreenHelper.GetScreenResolution();
 

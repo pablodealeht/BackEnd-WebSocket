@@ -77,6 +77,7 @@ async Task Echo(WebSocket webSocket, IServiceProvider services)
                     }
                     else if (tipo == "mover" && mensaje.ContainsKey("handle") && mensaje.ContainsKey("x") && mensaje.ContainsKey("y"))
                     {
+
                         if (mensaje["handle"].TryGetInt64(out long hWndValue))
                         {
                             int x = mensaje["x"].GetInt32();
@@ -145,6 +146,50 @@ async Task Echo(WebSocket webSocket, IServiceProvider services)
                             Console.WriteLine("❌ No se pudo parsear el handle.");
                         }
                     }
+                    else if (tipo == "resize" && mensaje.ContainsKey("handle") && mensaje.ContainsKey("width") && mensaje.ContainsKey("height"))
+                    {
+                        if (mensaje["handle"].TryGetInt64(out long hWndValue))
+                        {
+                            int width = mensaje["width"].GetInt32();
+                            int height = mensaje["height"].GetInt32();
+
+                            IntPtr hWnd = new IntPtr(hWndValue);
+                            WindowHelper.RedimensionarVentana(hWnd, width, height);
+                            Console.WriteLine($"🔁 Ventana redimensionada por handle: {hWnd} → ({width} x {height})");
+
+                            using var scope = services.CreateScope();
+                            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                            var ventanaDb = await db.Ventanas.FindAsync(hWndValue);
+                            if (ventanaDb == null)
+                            {
+                                ventanaDb = new VentanaDb
+                                {
+                                    Handle = hWndValue,
+                                    Title = "", // opcional si querés guardar
+                                    Width = width,
+                                    Height = height,
+                                    X = 0,
+                                    Y = 0,
+                                    UltimaActualizacion = DateTime.Now
+                                };
+                                db.Ventanas.Add(ventanaDb);
+                            }
+                            else
+                            {
+                                ventanaDb.Width = width;
+                                ventanaDb.Height = height;
+                                ventanaDb.UltimaActualizacion = DateTime.Now;
+                            }
+
+                            await db.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            Console.WriteLine("No se pudo parsear el handle para resize.");
+                        }
+                    }
+
                 }
             }
             catch (Exception ex)

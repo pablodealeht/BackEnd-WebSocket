@@ -67,6 +67,13 @@ namespace BackEnd_WebSocket.Services
         private const uint SWP_NOSIZE = 0x0001;
         private static readonly IntPtr HWND_TOP = IntPtr.Zero;
 
+        public static void RedimensionarVentana(IntPtr hWnd, int width, int height)
+        {
+            const uint SWP_NOMOVE = 0x0002;
+            SetWindowPos(hWnd, IntPtr.Zero, 0, 0, width, height, SWP_NOMOVE);
+        }
+
+
         public static void MoverVentana(IntPtr hWnd, int x, int y)
         {
             SetWindowPos(hWnd, HWND_TOP, x, y, 0, 0, SWP_NOSIZE);

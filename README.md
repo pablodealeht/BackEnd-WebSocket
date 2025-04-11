@@ -1,95 +1,106 @@
-Challenge .NET Developer
+# Challenge .NET Developer
 
-Descripción
+## Descripción
 
-Aplicación Web en Angular + Backend en .NET que permite sincronizar la posición, tamaño y estado de ventanas (Notepad.exe) del sistema operativo Windows a través de WebSockets. El sistema cuenta con:
+Aplicación Web en **Angular 17** + **Backend en .NET 8** que permite sincronizar la posición, tamaño y estado de ventanas (Notepad.exe) del sistema operativo Windows mediante WebSocket. Incluye:
 
-Autenticación por JWT (Json Web Token)
+- Autenticación JWT (Json Web Token)
+- ABM de usuarios usando **Identity + Entity Framework Core**
+- Comunicación bidireccional en tiempo real por WebSocket
+- Manipulación de ventanas con Win32 API (mover, redimensionar, cerrar)
+- Persistencia en SQL Server de estado de cada ventana
 
-ABM de usuarios usando Identity + Entity Framework
+---
 
-Comunicación bidireccional por WebSocket para mover, redimensionar y cerrar ventanas
+## Tecnologías utilizadas
 
-Persistencia en base de datos SQL Server de la posición y tamaño de cada ventana
+### Backend (.NET 8)
+- ASP.NET Core
+- Entity Framework Core
+- Identity
+- JWT Authentication
+- WebSocket nativo
+- Win32 API (P/Invoke)
+- SQL Server Express
+- Swagger para documentación
 
-Tecnologías utilizadas
+### Frontend (Angular 17 standalone)
+- WebSocket nativo (desde Angular)
+- Escalado visual en función de la resolución
+- Drag & Drop + Resize personalizado
+- Prevención de colisiones entre ventanas
 
-Backend (.NET 8)
+---
 
-ASP.NET Core
+## Requisitos del sistema
 
-Entity Framework Core
+- Windows (requerido por uso de Win32 API y Notepad.exe)
+- .NET 8 SDK
+- Node.js + Angular CLI
+- SQL Server Express (instancia local `localhost\SQLEXPRESS`)
 
-Identity (usuarios)
+---
 
-JWT
+## Ejecución
 
-WebSocket nativo
+### Paso 1: Backend
 
-Win32 API (para manipular ventanas)
+1. Clonar el repositorio
+2. Abrir el proyecto en Visual Studio o VS Code
+3. Ejecutar la migración inicial para crear la base de datos:
 
-SQL Server Express
+   ```bash
+   dotnet ef database update
+   ```
 
-Swagger para documentación
+4. Levantar el servidor:
 
-Frontend (Angular 17 standalone)
+   ```bash
+   dotnet run
+   ```
 
-WebSocket nativo (desde Angular)
+5. Acceder a Swagger:
 
-Escalado visual según resolución
+   ```
+   https://localhost:5197/swagger
+   ```
 
-Drag & Drop + Resize personalizado
+### Paso 2: Frontend
 
-Prevención de colisiones entre ventanas
+1. Navegar a la carpeta `FrontEnd`
+2. Ejecutar el servidor Angular:
 
-Requisitos
+   ```bash
+   ng serve
+   ```
 
-Windows (obligatorio por uso de Notepad.exe y Win32 APIs)
+3. Acceder en el navegador a:
 
-.NET 8 SDK
+   ```
+   http://localhost:4200
+   ```
 
-Node.js y Angular CLI
+4. Crear un usuario desde Swagger o usar el registro en Angular
+5. Iniciar sesión, lo que guardará el JWT en localStorage
+6. Al autenticarse se establece la conexión WebSocket
 
-SQL Server Express (con instancia local localhost\SQLEXPRESS)
+---
 
-Ejecución
+## Características implementadas
 
-Paso 1: Backend
+- Login y registro de usuarios con Identity y JWT
+- WebSocket seguro con autenticación
+- Representación visual de ventanas del sistema
+- Drag & Drop y Resize reflejado en el sistema operativo
+- Prevención de superposiciones entre ventanas
+- Guardado de posición y tamaño en base de datos
+- Recuperación del estado guardado al iniciar
 
-Clonar el proyecto y abrir en Visual Studio o VS Code
+---
 
-Crear la base de datos (se hace automáticamente con la migración inicial):
+## Estructura del proyecto
 
-dotnet ef database update
-
-Ejecutar el proyecto:
-
-dotnet run
-
-Esto levantará el backend y exponerá Swagger en:
-
-https://localhost:5197/swagger
-
-Paso 2: Frontend
-
-Desde carpeta FrontEnd ejecutar:
-
-ng serve
-
-Acceder a:
-
-http://localhost:4200
-
-Crear un usuario desde Swagger (/api/auth/register) o directamente desde Angular
-
-Iniciar sesión en Angular. Se guardará el token en localStorage y se establecerá la conexión por WebSocket.
-
-Características implementadas
-
-
-
-Estructura
-
+```
 BackEnd_WebSocket
 ├── Controllers
 │   ├── AuthController.cs
@@ -110,19 +121,25 @@ FrontEnd
 │   │   └── canvas
 │   └── services
 │       └── web-socket.service.ts
+```
 
-Consideraciones adicionales
+---
 
-El sistema está preparado para crecer (CQRS y módulos separados)
+## Consideraciones adicionales
 
-Se podría agregar captura de imagen de la ventana en miniatura como bonus
+- Se recomienda ejecutar como **Administrador** para evitar restricciones del sistema operativo
+- La arquitectura es escalable y preparada para CQRS y separación por módulos
+- El token JWT se transfiere por query string al conectar el WebSocket
+- Se podría extender para capturar miniaturas (bonus no implementado)
 
-Se recomienda ejecutar como administrador si hay problemas con permisos en la API de ventanas
+---
 
-Autor
+## Autor
 
-Pablo Gianfortone
+**Pablo Gianfortone**  
+Proyecto desarrollado como parte del challenge .NET Developer para **Sia Interactive** (Proyecto C-Control)
 
-Proyecto realizado como parte del Challenge .NET Developer para Sia Interactive, Proyecto C-Control
+2025
 
-© 2025
+---
+

@@ -3,7 +3,6 @@
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -167,7 +166,7 @@ async Task Echo(WebSocket webSocket, IServiceProvider services)
                             if (ventana != null)
                             {
                                 WindowHelper.CerrarVentana(ventana.Handle);
-                                Console.WriteLine($"🛑 Ventana cerrada: {ventana.Title}");
+                                Console.WriteLine($" Ventana cerrada: {ventana.Title}");
                             }
                         }
                     }
@@ -180,7 +179,7 @@ async Task Echo(WebSocket webSocket, IServiceProvider services)
 
                             IntPtr hWnd = new IntPtr(hWndValue);
                             WindowHelper.MoverVentana(hWnd, x, y);
-                            Console.WriteLine($"✅ Ventana movida: {hWnd} → ({x}, {y})");
+                            Console.WriteLine($" Ventana movida: {hWnd} → ({x}, {y})");
 
                             using var scope = services.CreateScope();
                             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -213,7 +212,7 @@ async Task Echo(WebSocket webSocket, IServiceProvider services)
                         }
                         else
                         {
-                            Console.WriteLine("❌ No se pudo parsear el handle para mover.");
+                            Console.WriteLine(" No se pudo parsear el handle para mover.");
                         }
                     }
                     else if (tipo == "resize" && mensaje.ContainsKey("handle") && mensaje.ContainsKey("width") && mensaje.ContainsKey("height"))
@@ -225,7 +224,7 @@ async Task Echo(WebSocket webSocket, IServiceProvider services)
 
                             IntPtr hWnd = new IntPtr(hWndValue);
                             WindowHelper.RedimensionarVentana(hWnd, width, height);
-                            Console.WriteLine($"🔁 Ventana redimensionada: {hWnd} → ({width} x {height})");
+                            Console.WriteLine($" Ventana redimensionada: {hWnd} → ({width} x {height})");
 
                             using var scope = services.CreateScope();
                             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -238,7 +237,7 @@ async Task Echo(WebSocket webSocket, IServiceProvider services)
                                 ventanaDb = new VentanaDb
                                 {
                                     Handle = hWndValue,
-                                    Title = "", // Podés completarlo si querés
+                                    Title = "",
                                     Width = width,
                                     Height = height,
                                     X = x,
@@ -258,23 +257,23 @@ async Task Echo(WebSocket webSocket, IServiceProvider services)
                         }
                         else
                         {
-                            Console.WriteLine("❌ No se pudo parsear el handle para resize.");
+                            Console.WriteLine(" No se pudo parsear el handle para resize.");
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error procesando JSON: {ex.Message}");
+                Console.WriteLine($" Error procesando JSON: {ex.Message}");
             }
 
-            Console.WriteLine($"📩 Mensaje recibido: {receivedMessage}");
+            Console.WriteLine($" Mensaje recibido: {receivedMessage}");
 
             // Lanzar notepads
             if (receivedMessage == "iniciar")
             {
                 ProcessLauncher.AbrirNotepads(2);
-                Console.WriteLine("🚀 Se iniciaron 2 instancias de Notepad.");
+                Console.WriteLine("Se iniciaron 2 instancias de Notepad.");
             }
 
             // Enviar lista de ventanas activas

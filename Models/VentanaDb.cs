@@ -6,7 +6,7 @@ namespace BackEnd_WebSocket.Models
     public class VentanaDb
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)] // 👈 esto indica que no es IDENTITY
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long Handle { get; set; }
 
 
